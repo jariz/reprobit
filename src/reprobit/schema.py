@@ -278,6 +278,7 @@ class MsvcRelease(StrEnum):
     V5_SP1 = "5.0-sp1"
     V5_SP2 = "5.0-sp2"
     V5_SP3 = "5.0-sp3"
+    V7_1 = "7.1"
 
 
 class LockedTool(StrictModel):

@@ -23,6 +23,7 @@ from reprobit.toolchains import (
     MSVC_50_SP1,
     MSVC_50_SP2,
     MSVC_50_SP3,
+    MSVC_71,
     TOOLCHAIN_PROFILES,
     ClassicMSVCToolchain,
     ToolchainError,
@@ -37,6 +38,7 @@ _INTEGRATION_ROOTS = {
     MSVC_50_SP1: "REPROBIT_MSVC_5_0_SP1_ROOT",
     MSVC_50_SP2: "REPROBIT_MSVC_5_0_SP2_ROOT",
     MSVC_50_SP3: "REPROBIT_MSVC_5_0_SP3_ROOT",
+    MSVC_71: "REPROBIT_MSVC_7_1_ROOT",
 }
 
 
@@ -61,6 +63,7 @@ def test_all_classic_profiles_are_explicit_and_revision_pinned() -> None:
         MSVC_50_SP1,
         MSVC_50_SP2,
         MSVC_50_SP3,
+        MSVC_71,
     }
     assert TOOLCHAIN_PROFILES[MSVC_42].capabilities.compiler_frontend_form == "executable"
     assert TOOLCHAIN_PROFILES[MSVC_42].wine_dll_overrides == (

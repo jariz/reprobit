@@ -32,6 +32,7 @@ MSVC_50_RTM = "msvc_5_0_rtm"
 MSVC_50_SP1 = "msvc_5_0_sp1"
 MSVC_50_SP2 = "msvc_5_0_sp2"
 MSVC_50_SP3 = "msvc_5_0_sp3"
+MSVC_71 = "msvc_7_1"
 TREE_RECEIPT_ALGORITHM: Literal["portable-tree-v1"] = "portable-tree-v1"
 
 _TREE_MAX_ENTRIES = 200_000
@@ -196,8 +197,56 @@ _MSVC50_PRODUCERS = (
 )
 _MSVC50_INPUT_ROOTS = ("include", "mfc/include", "atl/include", "lib", "mfc/lib")
 _MSVC50_RUNTIME = ("bin/msdis100.dll",)
+_MSVC71_PRODUCERS = tuple(
+    f"Vc7/bin/{name}"
+    for name in (
+        "cl.exe",
+        "c1.dll",
+        "c1xx.dll",
+        "c2.dll",
+        "mspdb71.dll",
+        "link.exe",
+        "lib.exe",
+        "rc.exe",
+        "cvtres.exe",
+    )
+)
+_MSVC71_INPUT_ROOTS = (
+    "Vc7/include",
+    "Vc7/atlmfc/include",
+    "Vc7/PlatformSDK/Include",
+    "Vc7/lib",
+    "Vc7/atlmfc/lib",
+    "Vc7/PlatformSDK/Lib",
+)
+_MSVC71_RUNTIME = ("Vc7/bin/msobj71.dll", "Vc7/bin/rcdll.dll")
 
 _PROFILES = {
+    MSVC_71: ToolchainProfile(
+        identifier=MSVC_71,
+        display_name="Microsoft Visual C++ .NET 2003 (13.10.3077)",
+        family="msvc",
+        release="7.1",
+        sources=(
+            ToolchainSourcePin(
+                repository="https://github.com/archaic-msvc/msvc710.git",
+                revision="2932d76fe417b0bc49010b26d4be2e5b743cc4be",
+                paths=(*_MSVC71_PRODUCERS, *_MSVC71_INPUT_ROOTS, *_MSVC71_RUNTIME),
+            ),
+        ),
+        compiler="Vc7/bin/cl.exe",
+        linker="Vc7/bin/link.exe",
+        librarian="Vc7/bin/lib.exe",
+        resource_compiler="Vc7/bin/rc.exe",
+        required_producers=_MSVC71_PRODUCERS,
+        include_roots=_MSVC71_INPUT_ROOTS[:3],
+        library_roots=_MSVC71_INPUT_ROOTS[3:],
+        default_compile_options=_COMMON_OPTIONS,
+        capabilities=ToolchainCapabilities(
+            compiler_frontend_form="dynamic_library", pdb_generation="7.0"
+        ),
+        required_runtime_files=_MSVC71_RUNTIME,
+    ),
     MSVC_42: ToolchainProfile(
         identifier=MSVC_42,
         display_name="Microsoft Visual C++ 4.2",
@@ -1050,7 +1099,7 @@ class ClassicMSVCToolchain:
         include = ";".join(self.logical_path(path) for path in self.profile.include_roots)
         libraries = ";".join(self.logical_path(path) for path in self.profile.library_roots)
         return {
-            "PATH": self.logical_path("bin"),
+            "PATH": self.logical_path(PurePosixPath(self.profile.compiler).parent.as_posix()),
             "INCLUDE": include,
             "LIB": libraries,
             "TMP": temporary,
@@ -1171,6 +1220,7 @@ __all__ = [
     "MSVC_50_SP1",
     "MSVC_50_SP2",
     "MSVC_50_SP3",
+    "MSVC_71",
     "TOOLCHAIN_PROFILES",
     "TREE_RECEIPT_ALGORITHM",
     "ClassicMSVCToolchain",

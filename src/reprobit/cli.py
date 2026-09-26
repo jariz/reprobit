@@ -488,6 +488,26 @@ def _parser() -> argparse.ArgumentParser:
     )
     subcommands = parser.add_subparsers(dest="command", required=True)
 
+    from reprobit.cli_function_match import command_match_function
+
+    match = _subcommand(
+        subcommands,
+        "match-function",
+        help="compile and compare one MSVC 7.1 leaf (not whole-artifact certification)",
+    )
+    match.add_argument("source", help="self-contained C++ source")
+    match.add_argument("--toolchain-root", required=True, help="pinned msvc710 repository root")
+    match.add_argument("--reference", required=True, help="owned reference PE32 executable")
+    match.add_argument("--reference-sha256", required=True, help="expected whole-reference SHA-256")
+    match.add_argument("--symbol", required=True, help="exact decorated COFF function name")
+    match.add_argument("--va", required=True, type=lambda value: int(value, 0))
+    match.add_argument("--size", required=True, type=int, help="complete reference function size")
+    match.add_argument("--wine", help="Wine or CrossOver launcher (omit on native Windows)")
+    match.add_argument("--bottle", help="CrossOver bottle name; requires its Wine launcher")
+    match.add_argument("--report", required=True, help="new JSON report path")
+    match.add_argument("--timeout", type=_positive_seconds, default=120.0)
+    match.set_defaults(handler=command_match_function)
+
     init = _subcommand(subcommands, "init", help="start a ReproBit project")
     _add_project_argument(init)
     init.add_argument(

@@ -4,6 +4,9 @@
 
 <h1 align="center">ReproBit</h1>
 
+This fork adds experimental [MSVC 7.1 leaf-function matching](docs/function-matching.md),
+including CrossOver execution. It is separate from whole-artifact certification.
+
 **Rebuild old software exactly—and show why the result can be trusted.**
 
 ReproBit helps decompilation projects reproduce an original executable byte for byte with its
